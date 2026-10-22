@@ -1,0 +1,10 @@
+GET http://localhost:3000/api/v1/polls/test-poll-123/results
+
+###
+
+POST http://localhost:3000/api/v1/polls/test-poll-123/vote
+
+{
+  "userId": "user-456",
+  "optionId": "opt-1"
+}

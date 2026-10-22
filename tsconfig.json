@@ -17,6 +17,20 @@
     "skipLibCheck": true,
     "strict": true,
     "strictPropertyInitialization": false,
-    "types": ["vitest/globals", "node"]
+    "types": [
+      "vitest/globals",
+      "node"
+    ],
+    "paths": {
+      "#/polls/*": [
+        "./src/polls/*"
+      ],
+      "#/types/*": [
+        "./src/types/*"
+      ],
+      "#/app/*": [
+        "./src/*"
+      ],
+    }
   }
 }

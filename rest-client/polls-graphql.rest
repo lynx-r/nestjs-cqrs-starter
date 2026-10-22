@@ -1,0 +1,5 @@
+POST http://localhost:3000/graphql
+Accept: application/graphql-response+json, application/json
+Content-Type: application/json
+
+{"query":"{\n  results(id: \"test-poll-123\") {\n    id\n    options {\n      id\n      percentage\n      votesCount\n    }\n    question\n    status\n    totalVotes\n    expiresAt\n  }\n}"}

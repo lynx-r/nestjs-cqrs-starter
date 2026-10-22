@@ -1,0 +1,8 @@
+strictPeerDependencies: true
+
+peerDependencyRules:
+  allowedVersions:
+    'tsconfck>typescript': '6.0.3'
+
+allowBuilds:
+  prisma: true
