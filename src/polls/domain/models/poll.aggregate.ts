@@ -3,6 +3,7 @@ import { BadRequestException } from '@nestjs/common';
 
 import { OptionId, PollId, PollStatus, VoteId } from '#/types/poll.types.js';
 import { AggregateRoot } from '@nestjs/cqrs';
+import { VoteCastEvent } from '../events/vote-cast.event.js';
 import { PollOption } from './poll-option.value-object.js';
 import { Vote } from './vote.value-object.js';
 
@@ -64,6 +65,16 @@ export class Poll extends AggregateRoot {
 
     const newVote = new Vote(voteId, userId, this.id, optionId, new Date());
     this.votes.set(userId, newVote);
+
+    this.apply(
+      new VoteCastEvent(
+        newVote.id,
+        newVote.pollId,
+        newVote.userId,
+        newVote.optionId,
+        newVote.createdAt,
+      ),
+    );
 
     return newVote;
   }

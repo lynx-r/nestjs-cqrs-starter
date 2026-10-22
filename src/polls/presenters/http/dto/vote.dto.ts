@@ -1,11 +1,11 @@
-import type { UserId } from '#/types/author.types.js';
-import type { OptionId } from '#/types/poll.types.js';
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class VoteDto {
   @IsString()
-  optionId: OptionId;
+  @IsNotEmpty()
+  optionId: string;
 
   @IsString()
-  userId: UserId;
+  @IsNotEmpty()
+  userId: string;
 }

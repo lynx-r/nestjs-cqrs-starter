@@ -1,6 +1,7 @@
 import { Poll } from '#/polls/domain/models/poll.aggregate.js';
 import { Vote } from '#/polls/domain/models/vote.value-object.js';
 import { PollRepository } from '#/polls/domain/repositories/poll.repository.js';
+import { OptionId, PollId } from '#/types/poll.types.js';
 import { Injectable } from '@nestjs/common';
 import { InMemoryDataStore } from './in-memory-data.store.js';
 
@@ -16,14 +17,10 @@ export class InMemoryPollRepository implements PollRepository {
   async saveVote(vote: Vote): Promise<void> {
     // Сохраняем голос в "таблицу" голосов на стороне записи
     this.store.writeVotes.push(vote);
-
-    // ВАЖНО для CQRS: Поскольку у нас пока нет механизма событий (Domain Events),
-    // мы временно обновим Read-модель напрямую прямо здесь, чтобы эндпоинт чтения выдавал актуальные данные.
-    this.synchronizeReadModel(vote);
   }
 
   // Временный метод синхронизации (замена брокера сообщений/ивентов для In-Memory)
-  private synchronizeReadModel(vote: Vote) {
+  public synchronizeReadModel(vote: { pollId: PollId; optionId: OptionId }) {
     const readModel = this.store.readPollResults.get(vote.pollId);
     if (!readModel) {
       return;

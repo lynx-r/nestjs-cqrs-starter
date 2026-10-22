@@ -1,4 +1,4 @@
-import type { OptionId, PollId, PollStatus } from '#/types/poll.types.js';
+import type { PollStatus } from '#/types/poll.types.js';
 import {
   Field,
   GraphQLISODateTime,
@@ -11,7 +11,7 @@ import { IsString } from 'class-validator';
 @ObjectType()
 export class ReadPollResultsDto {
   @Field(() => ID)
-  id: PollId;
+  id: string;
 
   @Field()
   @IsString()
@@ -37,7 +37,7 @@ export class ReadPollResultsDto {
 @ObjectType()
 export class PollOptionDto {
   @Field(() => ID)
-  id: OptionId;
+  id: string;
 
   @Field()
   @IsString()

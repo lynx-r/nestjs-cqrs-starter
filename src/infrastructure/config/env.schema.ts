@@ -23,6 +23,9 @@ export class EnvSchema {
   SERVER_ADDRESS: string;
 
   @IsString()
+  JSON_LIMIT: string;
+
+  @IsString()
   DATABASE_NAME: string;
 
   @IsString()

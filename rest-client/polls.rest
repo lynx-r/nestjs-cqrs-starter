@@ -1,10 +1,14 @@
 GET http://localhost:3000/api/v1/polls/test-poll-123/results
+Content-Type: application/json
 
 ###
 
 POST http://localhost:3000/api/v1/polls/test-poll-123/vote
+Content-Type: application/json
 
 {
-  "userId": "user-456",
-  "optionId": "opt-1"
+  "userId": "user-12",
+  "optionId": "opt-2"
 }
+
+###

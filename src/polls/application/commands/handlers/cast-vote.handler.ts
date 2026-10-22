@@ -15,22 +15,24 @@ export class CastVoteHandler implements ICommandHandler<CastVoteCommand> {
     const { pollId, userId, optionId } = command;
 
     // 1. Загружаем агрегат из базы данных записи
-    let poll = await this.pollRepository.findById(pollId);
+    const poll = await this.pollRepository.findById(pollId);
     if (!poll) {
       throw new NotFoundException(`Опрос с ID ${pollId} не найден`);
     }
-    poll = this.publisher.mergeObjectContext(poll);
 
     // 2. Генерируем ID для нового голоса (можно доверить БД, но в DDD лучше делать в приложении)
     const voteId = randomUUID();
 
+    // 2. Связываем наш загруженный агрегат с контекстом событий NestJS
+    const pollContext = this.publisher.mergeObjectContext(poll);
+
     // 3. Вызываем доменную логику. Если правила нарушены,
     // метод внутри poll.entity.ts сам выбросит ошибку (например, BadRequestException)
-    const newVote = poll.castVote(voteId, userId, optionId);
-
-    // TODO: AggregateRoot for an event SaveVoteEvent or use a direct repository save
+    const newVote = pollContext.castVote(voteId, userId, optionId);
 
     // 4. Сохраняем изменения в базу данных записи (Write DB)
     await this.pollRepository.saveVote(newVote);
+
+    pollContext.commit();
   }
 }

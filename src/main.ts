@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import {
   ClassSerializerInterceptor,
   INestApplication,
@@ -6,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ServerResponse } from 'http';
+import { json } from 'express';
 import { AppModule } from './app.module.js';
 import { EnvConfigService } from './infrastructure/config/env-config.service.js';
 import { NodeEnv } from './infrastructure/config/env.types.js';
@@ -21,10 +23,10 @@ async function bootstrap() {
   );
   const configService = app.get(EnvConfigService);
 
+  setupLogger(app, configService);
   setupGlobalConfig(app, configService);
   setupSwagger(app, configService);
   setupCors(app, configService);
-  setupLogger(app, configService);
 
   /**
    * Trust the first proxy hop.
@@ -53,14 +55,29 @@ function setupGlobalConfig(
   app: INestApplication,
   configService: EnvConfigService,
 ) {
+  app.use(json({ limit: configService.jsonLimit }));
+
+  // app.use((req: any, res: any, next: any) => {
+  //   if (req.method === 'POST') {
+  //     // Если это GraphQL, пишем переменные, если REST — весь body
+  //     const bodyToLog = req.body?.variables ? req.body.variables : req.body;
+  //     console.log(
+  //       '--- Входящие данные POST ---',
+  //       JSON.stringify(bodyToLog, null, 2),
+  //     );
+  //   }
+  //   next();
+  // });
+
   app.useGlobalFilters(new CoreExceptionFilter(configService));
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // Удаляет поля, которых нет в DTO
       forbidNonWhitelisted: true, // Выдает ошибку, если есть лишние поля
       transform: true, // Автоматически преобразует типы (например, строку в число)
       stopAtFirstError: true,
-      // exceptionFactory,
+      enableDebugMessages: true,
     }),
   );
 
@@ -131,13 +148,13 @@ function setupSwagger(app: INestApplication, configService: EnvConfigService) {
     },
   });
 
-  app.use(
-    `/${configService.swaggerDocsPath}`,
-    (_req: Request, res: ServerResponse) => {
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(document));
-    },
-  );
+  // app.use(
+  //   `/${configService.swaggerDocsPath}`,
+  //   (_req: Request, res: ServerResponse) => {
+  //     res.setHeader('Content-Type', 'application/json');
+  //     res.end(JSON.stringify(document));
+  //   },
+  // );
 
   return document;
 }
